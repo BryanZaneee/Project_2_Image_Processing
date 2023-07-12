@@ -125,6 +125,7 @@ Image multiplyBlend(const Image& top, const Image& bottom) {
     return result;
 }
 
+
 int main() {
     // Read images from a TGA file
     Image layer1 = readTGA("layer1.tga");
