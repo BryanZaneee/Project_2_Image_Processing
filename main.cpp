@@ -17,7 +17,7 @@ double screen(double P1, double P2) {
 
 // Subtract
 double subtract(double P1, double P2) {
-    return std::max(0.0, P1 - P2);  // Ensure the result is not less than 0
+    return std::max(0.0, P1 / 255.0 - P2 / 255.0);
 }
 
 // Addition
@@ -56,6 +56,7 @@ struct Image {
     char imageDescriptor;           // Extra data about the image (usually 0)
     vector<Pixel> pixels;           // The pixel data of the image
 };
+
 
 // Function to read a TGA file and return an Image structure
 Image readTGA(const string& filename) {
@@ -118,12 +119,13 @@ void writeTGA(const string& filename, const Image& img) {
 Image multiplyBlend(const Image& top, const Image& bottom) {
     Image result = top; // Start with a copy of the top image
     for (size_t i = 0; i < result.pixels.size(); ++i) {
-        result.pixels[i].red = multiply(top.pixels[i].red, bottom.pixels[i].red);
-        result.pixels[i].green = multiply(top.pixels[i].green, bottom.pixels[i].green);
-        result.pixels[i].blue = multiply(top.pixels[i].blue, bottom.pixels[i].blue);
+        result.pixels[i].red = static_cast<unsigned char>(255 * multiply(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(255 * multiply(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(255 * multiply(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0));
     }
     return result;
 }
+
 
 
 int main() {
