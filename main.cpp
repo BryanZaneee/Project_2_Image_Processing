@@ -119,21 +119,28 @@ void writeTGA(const string& filename, const Image& img) {
 Image multiplyBlend(const Image& top, const Image& bottom) {
     Image result = top; // Start with a copy of the top image
     for (size_t i = 0; i < result.pixels.size(); ++i) {
-        result.pixels[i].red = static_cast<unsigned char>(255 * multiply(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0));
-        result.pixels[i].green = static_cast<unsigned char>(255 * multiply(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0));
-        result.pixels[i].blue = static_cast<unsigned char>(255 * multiply(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0));
+        // Calculate the new red, green, and blue values as doubles
+        // This is done by normalizing the pixel values (dividing by 255.0), performing the multiply operation,
+        // and then denormalizing the result (multiplying by 255)
+        double red = multiply(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
+        double green = multiply(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
+        double blue = multiply(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
+
+        // Clamp the resulting red, green, and blue values to the range 0-255
+        // This is done using the std::min and std::max functions to ensure the values are within this range
+        // This prevents any issues related to overflow or underflow of the unsigned char data type
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
     }
     return result;
 }
 
 
-
 int main() {
     // Read images from a TGA file
-    Image layer1 = readTGA("layer1.tga");
-    Image pattern1 = readTGA("pattern1.tga");
-    Image layer2 = readTGA("layer2.tga");
-    Image car = readTGA("car.tga");
+    Image layer1 = readTGA("input/layer1.tga");
+    Image pattern1 = readTGA("input/pattern1.tga");
 
     // Write the image to another TGA file
     writeTGA("output/part1.tga", multiplyBlend(layer1, pattern1));
