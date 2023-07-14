@@ -136,13 +136,155 @@ Image multiplyBlend(const Image& top, const Image& bottom) {
     return result;
 }
 
+// Task 2
+Image subtractBlend(const Image& top, const Image& bottom) {
+    Image result = top;
+    for (size_t i = 0; i < result.pixels.size(); ++i) {
+        double red = subtract(top.pixels[i].red, bottom.pixels[i].red) * 255;
+        double green = subtract(top.pixels[i].green, bottom.pixels[i].green) * 255;
+        double blue = subtract(top.pixels[i].blue, bottom.pixels[i].blue) * 255;
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+    }
+    return result;
+}
+
+// Task 3
+Image screenBlend(const Image& top, const Image& bottom) {
+    Image result = top;
+    for (size_t i = 0; i < result.pixels.size(); ++i) {
+        double red = screen(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
+        double green = screen(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
+        double blue = screen(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+    }
+    return result;
+}
+
+// Task 4
+// This task is a combination of multiply and subtract
+
+// Task 5
+Image overlayBlend(const Image& top, const Image& bottom) {
+    Image result = top;
+    for (size_t i = 0; i < result.pixels.size(); ++i) {
+        double red = overlay(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
+        double green = overlay(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
+        double blue = overlay(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+    }
+    return result;
+}
+
+// Task 6
+Image addGreen(const Image& img, int value) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        int green = pixel.green + value;
+        pixel.green = static_cast<unsigned char>(std::min(std::max(green, 0), 255));
+    }
+    return result;
+}
+
+// Task 7
+Image scaleRedBlue(const Image& img, double redScale, double blueScale) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        int red = pixel.red * redScale;
+        int blue = pixel.blue * blueScale;
+        pixel.red = static_cast<unsigned char>(std::min(std::max(red, 0), 255));
+        pixel.blue = static_cast<unsigned char>(std::min(std::max(blue, 0), 255));
+    }
+    return result;
+}
+
+// Task 8
+void writeChannel(const string& filename, const Image& img, char channel) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        if (channel == 'r') {
+            pixel.green = pixel.red;
+            pixel.blue = pixel.red;
+        } else if (channel == 'g') {
+            pixel.red = pixel.green;
+            pixel.blue = pixel.green;
+        } else if (channel == 'b') {
+            pixel.red = pixel.blue;
+            pixel.green = pixel.blue;
+        }
+    }
+    writeTGA(filename, result);
+}
+
+// Task 9
+Image combineChannels(const Image& red, const Image& green, const Image& blue) {
+    Image result = red;
+    for (size_t i = 0; i < result.pixels.size(); ++i) {
+        result.pixels[i].green = green.pixels[i].red;
+        result.pixels[i].blue = blue.pixels[i].red;
+    }
+    return result;
+}
+
+// Task 10
+Image rotate180(const Image& img) {
+    Image result = img;
+    std::reverse(result.pixels.begin(), result.pixels.end());
+    return result;
+}
 
 int main() {
     // Read images from a TGA file
     Image layer1 = readTGA("input/layer1.tga");
     Image pattern1 = readTGA("input/pattern1.tga");
+    Image layer2 = readTGA("input/layer2.tga");
+    Image car = readTGA("input/car.tga");
+    Image pattern2 = readTGA("input/pattern2.tga");
+    Image text = readTGA("input/text.tga");
+    Image circles = readTGA("input/circles.tga");
+    Image layer_red = readTGA("input/layer_red.tga");
+    Image layer_green = readTGA("input/layer_green.tga");
+    Image layer_blue = readTGA("input/layer_blue.tga");
+    Image text2 = readTGA("input/text2.tga");
 
-    // Write the image to another TGA file
+    // Task 1
     writeTGA("output/part1.tga", multiplyBlend(layer1, pattern1));
+
+    // Task 2
+    writeTGA("output/part2.tga", subtractBlend(layer2, car));
+
+    // Task 3
+    Image temp1 = multiplyBlend(layer1, pattern2);
+    writeTGA("output/part3.tga", screenBlend(text, temp1));
+
+    // Task 4
+    Image temp2 = multiplyBlend(layer2, circles);
+    writeTGA("output/part4.tga", subtractBlend(pattern2, temp2));
+
+    // Task 5
+    writeTGA("output/part5.tga", overlayBlend(layer1, pattern1));
+
+    // Task 6
+    writeTGA("output/part6.tga", addGreen(car, 200));
+
+    // Task 7
+    writeTGA("output/part7.tga", scaleRedBlue(car, 4, 0));
+
+    // Task 8
+    writeChannel("output/part8_r.tga", car, 'r');
+    writeChannel("output/part8_g.tga", car, 'g');
+    writeChannel("output/part8_b.tga", car, 'b');
+
+    // Task 9
+    writeTGA("output/part9.tga", combineChannels(layer_red, layer_green, layer_blue));
+
+    // Task 10
+    writeTGA("output/part10.tga", rotate180(text2));
+
     return 0;
 }
