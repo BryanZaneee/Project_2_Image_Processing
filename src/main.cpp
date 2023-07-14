@@ -1,4 +1,4 @@
-#include "file.h"
+#include "File.h"
 
 int main() {
     // Read images from a TGA file
