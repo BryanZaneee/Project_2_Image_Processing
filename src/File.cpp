@@ -12,7 +12,7 @@ double screen(double P1, double P2) {
 
 // Subtract
 double subtract(double P1, double P2) {
-    return std::max(0.0, P1 - P2);  // Ensure the result is not less than 0
+    return std::max(0.0, P2 - P1);  // Ensure the result is not less than 0
 }
 
 // Addition
