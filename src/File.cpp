@@ -87,7 +87,10 @@ void writeTGA(const string& filename, const Image& img) {
     file.put(img.imageDescriptor);
 
     // Write the pixel data to the file
-    file.write(reinterpret_cast<const char*>(img.pixels.data()), img.pixels.size() * sizeof(Pixel));
+    for (const Pixel& pixel : img.pixels) {
+        file.put(pixel.blue);
+        file.put(pixel.green);
+        file.put(pixel.red);
 }
 
 // Function to perform multiply blend operation
