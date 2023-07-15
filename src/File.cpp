@@ -256,3 +256,63 @@ Image rotate180(const Image& img) {
     std::reverse(result.pixels.begin(), result.pixels.end());
     return result;
 }
+
+// Function to flip an image
+Image flip(const Image& img) {
+    Image flippedImg = img; // Create a copy of the image
+    for (int y = 0; y < img.height; ++y) {
+        for (int x = 0; x < img.width / 2; ++x) {
+            // Swap pixels on opposite sides of the image
+            std::swap(flippedImg.pixels[y * img.width + x], flippedImg.pixels[y * img.width + (img.width - 1 - x)]);
+        }
+    }
+    return flippedImg;
+}
+
+// Function to keep only one color channel in an image
+Image onlyColor(const Image& img, const std::string& color) {
+    Image colorImg = img; // Create a copy of the image
+    for (Pixel& pixel : colorImg.pixels) {
+        if (color == "red") {
+            pixel.green = 0;
+            pixel.blue = 0;
+        } else if (color == "green") {
+            pixel.red = 0;
+            pixel.blue = 0;
+        } else if (color == "blue") {
+            pixel.red = 0;
+            pixel.green = 0;
+        }
+    }
+    return colorImg;
+}
+
+// Function to add a value to one color channel in an image
+Image addColor(const Image& img, const std::string& color, int value) {
+    Image coloredImg = img; // Create a copy of the image
+    for (Pixel& pixel : coloredImg.pixels) {
+        if (color == "red") {
+            pixel.red = std::min(255, pixel.red + value);
+        } else if (color == "green") {
+            pixel.green = std::min(255, pixel.green + value);
+        } else if (color == "blue") {
+            pixel.blue = std::min(255, pixel.blue + value);
+        }
+    }
+    return coloredImg;
+}
+
+// Function to scale one color channel in an image
+Image scaleColor(const Image& img, const std::string& color, int value) {
+    Image scaledImg = img; // Create a copy of the image
+    for (Pixel& pixel : scaledImg.pixels) {
+        if (color == "red") {
+            pixel.red = std::min(255, pixel.red * value);
+        } else if (color == "green") {
+            pixel.green = std::min(255, pixel.green * value);
+        } else if (color == "blue") {
+            pixel.blue = std::min(255, pixel.blue * value);
+        }
+    }
+    return scaledImg;
+}
