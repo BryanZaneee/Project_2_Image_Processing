@@ -1,4 +1,7 @@
 #include "File.h"
+#include <functional>
+#include <map>
+#include <string>
 
 // Multiply
 double multiply(double P1, double P2) {

@@ -1,85 +1,97 @@
 #include "File.h"
-#include <map>
+#include <string>
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
-        std::cout << "Usage: " << argv[0] << " <output file> <input file> <operation> [additional arguments...]\n";
+        std::cout << "Invalid number of arguments." << std::endl;
         return 1;
     }
 
-    std::string outputFile = argv[1];
-    std::string inputFile = argv[2];
-    std::string operation = argv[3];
-
-    Image img = readTGA(inputFile);
-
-    std::map<std::string, std::function<void(const std::string&, const Image&, const std::vector<std::string>&)>> operations = {
-            {"multiply", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                Image img2 = readTGA(args[0]);
-                writeTGA(outputFile, multiplyBlend(img, img2));
-            }},
-            {"subtract", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                Image img2 = readTGA(args[0]);
-                writeTGA(outputFile, subtractBlend(img, img2));
-            }},
-            {"overlay", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                Image img2 = readTGA(args[0]);
-                writeTGA(outputFile, overlayBlend(img, img2));
-            }},
-            {"screen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                Image img2 = readTGA(args[0]);
-                writeTGA(outputFile, screenBlend(img, img2));
-            }},
-            {"combine", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                Image imgGreen = readTGA(args[0]);
-                Image imgBlue = readTGA(args[1]);
-                writeTGA(outputFile, combineChannels(img, imgGreen, imgBlue));
-            }},
-            {"flip", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                writeTGA(outputFile, rotate180(img));
-            }},
-            {"onlyred", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                writeChannel(outputFile, img, 'r');
-            }},
-            {"onlygreen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                writeChannel(outputFile, img, 'g');
-            }},
-            {"onlyblue", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                writeChannel(outputFile, img, 'b');
-            }},
-            {"addred", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                int value = std::stoi(args[0]);
-                writeTGA(outputFile, addRed(img, value));
-            }},
-            {"addgreen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                int value = std::stoi(args[0]);
-                writeTGA(outputFile, addGreen(img, value));
-            }},
-            {"addblue", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                int value = std::stoi(args[0]);
-                writeTGA(outputFile, addBlue(img, value));
-            }},
-            {"scalered", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                double scale = std::stod(args[0]);
-                writeTGA(outputFile, scaleRed(img, scale));
-            }},
-            {"scalegreen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                double scale = std::stod(args[0]);
-                writeTGA(outputFile, scaleGreen(img, scale));
-            }},
-            {"scaleblue", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
-                double scale = std::stod(args[0]);
-                writeTGA(outputFile, scaleBlue(img, scale));
-            }}
-    };
-
-    if (operations.count(operation) == 0) {
-        std::cout << "Invalid operation. Available operations are: multiply, subtract, screen, overlay, combine, flip, onlyred, onlygreen, onlyblue, addred, addgreen, addblue, scalered, scalegreen, scaleblue\n";
+    std::string outputFilename = argv[1];
+    if (outputFilename.substr(outputFilename.find_last_of(".") + 1) != "tga") {
+        std::cout << "Invalid file name." << std::endl;
         return 1;
     }
 
-    std::vector<std::string> additionalArgs(argv + 4, argv + argc);
-    operations[operation](outputFile, img, additionalArgs);
+    std::string inputFilename = argv[2];
+    if (inputFilename.substr(inputFilename.find_last_of(".") + 1) != "tga") {
+        std::cout << "Invalid file name." << std::endl;
+        return 1;
+    }
+
+    Image img = readTGA(inputFilename);
+
+    for (int i = 3; i < argc; i += 2) {
+        std::string method = argv[i];
+
+        if (method == "multiply" || method == "subtract" || method == "overlay" || method == "screen") {
+            if (i + 1 >= argc) {
+                std::cout << "Missing argument." << std::endl;
+                return 1;
+            }
+
+            std::string secondFilename = argv[i + 1];
+            if (secondFilename.substr(secondFilename.find_last_of(".") + 1) != "tga") {
+                std::cout << "Invalid argument, invalid file name." << std::endl;
+                return 1;
+            }
+
+            Image secondImg = readTGA(secondFilename);
+
+            if (method == "multiply") {
+                img = multiplyBlend(img, secondImg);
+            } else if (method == "subtract") {
+                img = subtractBlend(img, secondImg);
+            } else if (method == "overlay") {
+                img = overlayBlend(img, secondImg);
+            } else if (method == "screen") {
+                img = screenBlend(img, secondImg);
+            }
+        } else if (method == "combine") {
+            if (i + 2 >= argc) {
+                std::cout << "Missing argument." << std::endl;
+                return 1;
+            }
+
+            std::string greenFilename = argv[i + 1];
+            std::string blueFilename = argv[i + 2];
+            if (greenFilename.substr(greenFilename.find_last_of(".") + 1) != "tga" || blueFilename.substr(blueFilename.find_last_of(".") + 1) != "tga") {
+                std::cout << "Invalid argument, invalid file name." << std::endl;
+                return 1;
+            }
+
+            Image greenImg = readTGA(greenFilename);
+            Image blueImg = readTGA(blueFilename);
+
+            img = combineChannels(img, greenImg, blueImg);
+            i++; // Skip an extra argument
+        } else if (method == "flip") {
+            img = flip(img);
+        } else if (method == "onlyred" || method == "onlygreen" || method == "onlyblue") {
+            img = onlyColor(img, method[4]);
+        } else if (method == "addred" || method == "addgreen" || method == "addblue") {
+            if (i + 1 >= argc) {
+                std::cout << "Missing argument." << std::endl;
+                return 1;
+            }
+
+            int value = std::stoi(argv[i + 1]);
+            img = addColor(img, method[3], value);
+        } else if (method == "scalered" || method == "scalegreen" || method == "scaleblue") {
+            if (i + 1 >= argc) {
+                std::cout << "Missing argument." << std::endl;
+                return 1;
+            }
+
+            int value = std::stoi(argv[i + 1]);
+            img = scaleColor(img, method[5], value);
+        } else {
+            std::cout << "Invalid method name." << std::endl;
+            return 1;
+        }
+    }
+
+    writeTGA(outputFilename, img);
 
     return 0;
 }
