@@ -52,10 +52,15 @@ Image readTGA(const string& filename) {
     img.pixels.resize(img.width * img.height);
 
     // Read the pixel data from the file
-    file.read(reinterpret_cast<char*>(img.pixels.data()), img.pixels.size() * sizeof(Pixel));
+    for (Pixel& pixel : img.pixels) {
+        pixel.blue = file.get();
+        pixel.green = file.get();
+        pixel.red = file.get();
+    }
 
     return img; // Return the image
 }
+
 
 // Function to write an Image structure to a TGA file
 void writeTGA(const string& filename, const Image& img) {
