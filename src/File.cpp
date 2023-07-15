@@ -112,16 +112,17 @@ Image multiplyBlend(const Image& top, const Image& bottom) {
 Image subtractBlend(const Image& top, const Image& bottom) {
     Image result = top;
     for (size_t i = 0; i < result.pixels.size(); ++i) {
-        double red = subtract(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
-        double green = subtract(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
-        double blue = subtract(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
+        int red = static_cast<int>(top.pixels[i].red) - static_cast<int>(bottom.pixels[i].red);
+        int green = static_cast<int>(top.pixels[i].green) - static_cast<int>(bottom.pixels[i].green);
+        int blue = static_cast<int>(top.pixels[i].blue) - static_cast<int>(bottom.pixels[i].blue);
 
-        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red + 0.5, 0.0), 255.0));
-        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green + 0.5, 0.0), 255.0));
-        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue + 0.5, 0.0), 255.0));
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0), 255));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0), 255));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0), 255));
     }
     return result;
 }
+
 
 // Function to perform screen blend operation
 Image screenBlend(const Image& top, const Image& bottom) {
