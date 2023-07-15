@@ -113,12 +113,13 @@ Image multiplyBlend(const Image& top, const Image& bottom) {
 }
 
 // Function to perform subtract blend operation
+// Function to perform subtract blend operation
 Image subtractBlend(const Image& top, const Image& bottom) {
     Image result = top;
     for (size_t i = 0; i < result.pixels.size(); ++i) {
-        int red = static_cast<int>(top.pixels[i].red) - static_cast<int>(bottom.pixels[i].red);
-        int green = static_cast<int>(top.pixels[i].green) - static_cast<int>(bottom.pixels[i].green);
-        int blue = static_cast<int>(top.pixels[i].blue) - static_cast<int>(bottom.pixels[i].blue);
+        int red = static_cast<int>(bottom.pixels[i].red) - static_cast<int>(top.pixels[i].red);
+        int green = static_cast<int>(bottom.pixels[i].green) - static_cast<int>(top.pixels[i].green);
+        int blue = static_cast<int>(bottom.pixels[i].blue) - static_cast<int>(top.pixels[i].blue);
 
         result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0), 255));
         result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0), 255));
@@ -126,6 +127,7 @@ Image subtractBlend(const Image& top, const Image& bottom) {
     }
     return result;
 }
+
 
 
 // Function to perform screen blend operation
