@@ -7,7 +7,7 @@ all: project2.out
 
 # Rule to build the executable
 project2.out: src/main.cpp src/File.cpp
-	$(CXX) $(CXXFLAGS) -o project2.out main.cpp File.cpp
+	$(CXX) $(CXXFLAGS) -o project2.out src/main.cpp src/File.cpp
 
 # Rule to run all tasks
 run: project2.out
