@@ -7,26 +7,24 @@
 #include <algorithm>
 using namespace std;
 
-// Pixel structure to hold the blue, green, and red components of a pixel
 struct Pixel {
     unsigned char blue, green, red;
 };
 
-// Image structure to hold the TGA header and pixel data of an image
 struct Image {
-    char idLength;                  // Length of the ID field that follows the header (usually 0)
-    char colorMapType;              // Whether a color map is included (usually 0)
-    char dataTypeCode;              // The type of image (usually 2 for uncompressed RGB)
-    short colorMapOrigin;           // The first entry index for the color map (usually 0)
-    short colorMapLength;           // The length of the color map (usually 0)
-    char colorMapDepth;             // The size of each entry in the color map (usually 0)
-    short xOrigin;                  // The horizontal pixel coordinate for the lower left corner of the image (usually 0)
-    short yOrigin;                  // The vertical pixel coordinate for the lower left corner of the image (usually 0)
-    short width;                    // The width of the image in pixels
-    short height;                   // The height of the image in pixels
-    char bitsPerPixel;              // The number of bits per pixel (usually 24 for RGB)
-    char imageDescriptor;           // Extra data about the image (usually 0)
-    vector<Pixel> pixels;           // The pixel data of the image
+    char idLength;
+    char colorMapType;
+    char dataTypeCode;
+    short colorMapOrigin;
+    short colorMapLength;
+    char colorMapDepth;
+    short xOrigin;
+    short yOrigin;
+    short width;
+    short height;
+    char bitsPerPixel;
+    char imageDescriptor;
+    vector<Pixel> pixels;
 };
 
 double multiply(double P1, double P2);
@@ -41,8 +39,12 @@ Image multiplyBlend(const Image& top, const Image& bottom);
 Image subtractBlend(const Image& top, const Image& bottom);
 Image screenBlend(const Image& top, const Image& bottom);
 Image overlayBlend(const Image& top, const Image& bottom);
+Image addRed(const Image& img, int value);
 Image addGreen(const Image& img, int value);
-Image scaleRedBlue(const Image& img, double redScale, double blueScale);
+Image addBlue(const Image& img, int value);
+Image scaleRed(const Image& img, double scale);
+Image scaleGreen(const Image& img, double scale);
+Image scaleBlue(const Image& img, double scale);
 void writeChannel(const string& filename, const Image& img, char channel);
 Image combineChannels(const Image& red, const Image& green, const Image& blue);
 Image rotate180(const Image& img);

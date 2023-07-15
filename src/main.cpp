@@ -1,52 +1,85 @@
 #include "File.h"
+#include <map>
 
-int main() {
-    // Read images from a TGA file
-    Image layer1 = readTGA("input/layer1.tga");
-    Image pattern1 = readTGA("input/pattern1.tga");
-    Image layer2 = readTGA("input/layer2.tga");
-    Image car = readTGA("input/car.tga");
-    Image pattern2 = readTGA("input/pattern2.tga");
-    Image text = readTGA("input/text.tga");
-    Image circles = readTGA("input/circles.tga");
-    Image layer_red = readTGA("input/layer_red.tga");
-    Image layer_green = readTGA("input/layer_green.tga");
-    Image layer_blue = readTGA("input/layer_blue.tga");
-    Image text2 = readTGA("input/text2.tga");
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cout << "Usage: " << argv[0] << " <output file> <input file> <operation> [additional arguments...]\n";
+        return 1;
+    }
 
-    // Task 1
-    writeTGA("output/part1.tga", multiplyBlend(layer1, pattern1));
+    std::string outputFile = argv[1];
+    std::string inputFile = argv[2];
+    std::string operation = argv[3];
 
-    // Task 2
-    writeTGA("output/part2.tga", subtractBlend(layer2, car));
+    Image img = readTGA(inputFile);
 
-    // Task 3
-    Image temp1 = multiplyBlend(layer1, pattern2);
-    writeTGA("output/part3.tga", screenBlend(text, temp1));
+    std::map<std::string, std::function<void(const std::string&, const Image&, const std::vector<std::string>&)>> operations = {
+            {"multiply", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                Image img2 = readTGA(args[0]);
+                writeTGA(outputFile, multiplyBlend(img, img2));
+            }},
+            {"subtract", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                Image img2 = readTGA(args[0]);
+                writeTGA(outputFile, subtractBlend(img, img2));
+            }},
+            {"overlay", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                Image img2 = readTGA(args[0]);
+                writeTGA(outputFile, overlayBlend(img, img2));
+            }},
+            {"screen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                Image img2 = readTGA(args[0]);
+                writeTGA(outputFile, screenBlend(img, img2));
+            }},
+            {"combine", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                Image imgGreen = readTGA(args[0]);
+                Image imgBlue = readTGA(args[1]);
+                writeTGA(outputFile, combineChannels(img, imgGreen, imgBlue));
+            }},
+            {"flip", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                writeTGA(outputFile, rotate180(img));
+            }},
+            {"onlyred", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                writeChannel(outputFile, img, 'r');
+            }},
+            {"onlygreen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                writeChannel(outputFile, img, 'g');
+            }},
+            {"onlyblue", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                writeChannel(outputFile, img, 'b');
+            }},
+            {"addred", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                int value = std::stoi(args[0]);
+                writeTGA(outputFile, addRed(img, value));
+            }},
+            {"addgreen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                int value = std::stoi(args[0]);
+                writeTGA(outputFile, addGreen(img, value));
+            }},
+            {"addblue", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                int value = std::stoi(args[0]);
+                writeTGA(outputFile, addBlue(img, value));
+            }},
+            {"scalered", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                double scale = std::stod(args[0]);
+                writeTGA(outputFile, scaleRed(img, scale));
+            }},
+            {"scalegreen", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                double scale = std::stod(args[0]);
+                writeTGA(outputFile, scaleGreen(img, scale));
+            }},
+            {"scaleblue", [](const std::string& outputFile, const Image& img, const std::vector<std::string>& args) {
+                double scale = std::stod(args[0]);
+                writeTGA(outputFile, scaleBlue(img, scale));
+            }}
+    };
 
-    // Task 4
-    Image temp2 = multiplyBlend(layer2, circles);
-    writeTGA("output/part4.tga", subtractBlend(pattern2, temp2));
+    if (operations.count(operation) == 0) {
+        std::cout << "Invalid operation. Available operations are: multiply, subtract, screen, overlay, combine, flip, onlyred, onlygreen, onlyblue, addred, addgreen, addblue, scalered, scalegreen, scaleblue\n";
+        return 1;
+    }
 
-    // Task 5
-    writeTGA("output/part5.tga", overlayBlend(layer1, pattern1));
-
-    // Task 6
-    writeTGA("output/part6.tga", addGreen(car, 200));
-
-    // Task 7
-    writeTGA("output/part7.tga", scaleRedBlue(car, 4, 0));
-
-    // Task 8
-    writeChannel("output/part8_r.tga", car, 'r');
-    writeChannel("output/part8_g.tga", car, 'g');
-    writeChannel("output/part8_b.tga", car, 'b');
-
-    // Task 9
-    writeTGA("output/part9.tga", combineChannels(layer_red, layer_green, layer_blue));
-
-    // Task 10
-    writeTGA("output/part10.tga", rotate180(text2));
+    std::vector<std::string> additionalArgs(argv + 4, argv + argc);
+    operations[operation](outputFile, img, additionalArgs);
 
     return 0;
 }

@@ -160,6 +160,15 @@ Image overlayBlend(const Image& top, const Image& bottom) {
     return result;
 }
 
+Image addRed(const Image& img, int value) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        int red = pixel.red + value;
+        pixel.red = static_cast<unsigned char>(std::min(std::max(red, 0), 255));
+    }
+    return result;
+}
+
 // Function to add green to an image
 Image addGreen(const Image& img, int value) {
     Image result = img;
@@ -181,6 +190,34 @@ Image scaleRedBlue(const Image& img, double redScale, double blueScale) {
     }
     return result;
 }
+
+Image scaleRed(const Image& img, double scale) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        int red = pixel.red * scale;
+        pixel.red = static_cast<unsigned char>(std::min(std::max(red, 0), 255));
+    }
+    return result;
+}
+
+Image scaleGreen(const Image& img, double scale) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        int green = pixel.green * scale;
+        pixel.green = static_cast<unsigned char>(std::min(std::max(green, 0), 255));
+    }
+    return result;
+}
+
+Image scaleBlue(const Image& img, double scale) {
+    Image result = img;
+    for (Pixel& pixel : result.pixels) {
+        int blue = pixel.blue * scale;
+        pixel.blue = static_cast<unsigned char>(std::min(std::max(blue, 0), 255));
+    }
+    return result;
+}
+
 
 // Function to write a single channel to an image
 void writeChannel(const string& filename, const Image& img, char channel) {
