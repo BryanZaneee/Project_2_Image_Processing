@@ -90,18 +90,15 @@ Image multiplyBlend(const Image& top, const Image& bottom) {
     Image result = top; // Start with a copy of the top image
     for (size_t i = 0; i < result.pixels.size(); ++i) {
         // Calculate the new red, green, and blue values as doubles
-        // This is done by normalizing the pixel values (dividing by 255.0), performing the multiply operation,
-        // and then denormalizing the result (multiplying by 255)
         double red = multiply(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
         double green = multiply(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
         double blue = multiply(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
 
-        // Clamp the resulting red, green, and blue values to the range 0-255
-        // This is done using the std::min and std::max functions to ensure the values are within this range
-        // This prevents any issues related to overflow or underflow of the unsigned char data type
-        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
-        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
-        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+        // Round the resulting red, green, and blue values to the nearest integer
+        // This is done by adding 0.5 to the value before casting it to an unsigned char
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red + 0.5, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green + 0.5, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue + 0.5, 0.0), 255.0));
     }
     return result;
 }
@@ -110,12 +107,13 @@ Image multiplyBlend(const Image& top, const Image& bottom) {
 Image subtractBlend(const Image& top, const Image& bottom) {
     Image result = top;
     for (size_t i = 0; i < result.pixels.size(); ++i) {
-        double red = subtract(top.pixels[i].red, bottom.pixels[i].red) * 255;
-        double green = subtract(top.pixels[i].green, bottom.pixels[i].green) * 255;
-        double blue = subtract(top.pixels[i].blue, bottom.pixels[i].blue) * 255;
-        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
-        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
-        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+        double red = subtract(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
+        double green = subtract(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
+        double blue = subtract(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
+
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red + 0.5, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green + 0.5, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue + 0.5, 0.0), 255.0));
     }
     return result;
 }
@@ -127,9 +125,10 @@ Image screenBlend(const Image& top, const Image& bottom) {
         double red = screen(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
         double green = screen(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
         double blue = screen(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
-        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
-        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
-        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red + 0.5, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green + 0.5, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue + 0.5, 0.0), 255.0));
     }
     return result;
 }
@@ -141,9 +140,10 @@ Image overlayBlend(const Image& top, const Image& bottom) {
         double red = overlay(top.pixels[i].red / 255.0, bottom.pixels[i].red / 255.0) * 255;
         double green = overlay(top.pixels[i].green / 255.0, bottom.pixels[i].green / 255.0) * 255;
         double blue = overlay(top.pixels[i].blue / 255.0, bottom.pixels[i].blue / 255.0) * 255;
-        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red, 0.0), 255.0));
-        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green, 0.0), 255.0));
-        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue, 0.0), 255.0));
+
+        result.pixels[i].red = static_cast<unsigned char>(std::min(std::max(red + 0.5, 0.0), 255.0));
+        result.pixels[i].green = static_cast<unsigned char>(std::min(std::max(green + 0.5, 0.0), 255.0));
+        result.pixels[i].blue = static_cast<unsigned char>(std::min(std::max(blue + 0.5, 0.0), 255.0));
     }
     return result;
 }
