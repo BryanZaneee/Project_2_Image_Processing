@@ -48,9 +48,5 @@ Image scaleBlue(const Image& img, double scale);
 void writeChannel(const string& filename, const Image& img, char channel);
 Image combineChannels(const Image& red, const Image& green, const Image& blue);
 Image rotate180(const Image& img);
-Image flip(const Image& img);
-Image onlyColor(const Image& img, const std::string& color);
-Image addColor(const Image& img, const std::string& color, int value);
-Image scaleColor(const Image& img, const std::string& color, int value);
 
 #endif //PROJECT2_FILE_H

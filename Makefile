@@ -9,6 +9,10 @@ all: project2.out
 project2.out: src/main.cpp src/File.cpp
 	$(CXX) $(CXXFLAGS) -o project2.out src/main.cpp src/File.cpp
 
+# rule to run the program
+run: project2.out
+	./project2.out
+
 # Rule to clean the project
 clean:
 	rm -f project2.out
