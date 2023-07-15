@@ -1,5 +1,34 @@
 #include "File.h"
 
+// Multiply
+double multiply(double P1, double P2) {
+    return P1 * P2;
+}
+
+// Screen
+double screen(double P1, double P2) {
+    return 1.0 - (1.0 - P1) * (1.0 - P2);
+}
+
+// Subtract
+double subtract(double P1, double P2) {
+    return std::max(0.0, P1 - P2);  // Ensure the result is not less than 0
+}
+
+// Addition
+double addition(double P1, double P2) {
+    return std::min(1.0, P1 + P2);  // Ensure the result is not more than 1
+}
+
+// Overlay
+double overlay(double P1, double P2) {
+    if (P2 <= 0.5) {
+        return 2.0 * P1 * P2;
+    } else {
+        return 1.0 - 2.0 * (1.0 - P1) * (1.0 - P2);
+    }
+}
+
 // Function to read a TGA file and return an Image structure
 Image readTGA(const string& filename) {
     ifstream file(filename, ios::binary); // Open the file in binary mode

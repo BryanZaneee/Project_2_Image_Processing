@@ -29,6 +29,12 @@ struct Image {
     vector<Pixel> pixels;           // The pixel data of the image
 };
 
+double multiply(double P1, double P2);
+double screen(double P1, double P2);
+double subtract(double P1, double P2);
+double addition(double P1, double P2);
+double overlay(double P1, double P2);
+
 Image readTGA(const string& filename);
 void writeTGA(const string& filename, const Image& img);
 Image multiplyBlend(const Image& top, const Image& bottom);
