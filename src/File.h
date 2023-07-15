@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 // Pixel structure to hold the blue, green, and red components of a pixel
