@@ -91,6 +91,7 @@ void writeTGA(const string& filename, const Image& img) {
         file.put(pixel.blue);
         file.put(pixel.green);
         file.put(pixel.red);
+    }
 }
 
 // Function to perform multiply blend operation
