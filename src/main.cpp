@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         } else if (method == "flip") {
             img = flip(img);
         } else if (method == "onlyred" || method == "onlygreen" || method == "onlyblue") {
-            img = onlyColor(img, method[4]);
+            img = onlyColor(img, std::string(1, method[4]));
         } else if (method == "addred" || method == "addgreen" || method == "addblue") {
             if (i + 1 >= argc) {
                 std::cout << "Missing argument." << std::endl;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
             }
 
             int value = std::stoi(argv[i + 1]);
-            img = addColor(img, method[3], value);
+            img = addColor(img, std::string(1, method[3]), value);
         } else if (method == "scalered" || method == "scalegreen" || method == "scaleblue") {
             if (i + 1 >= argc) {
                 std::cout << "Missing argument." << std::endl;
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
             }
 
             int value = std::stoi(argv[i + 1]);
-            img = scaleColor(img, method[5], value);
+            img = scaleColor(img, std::string(1, method[5]), value);
         } else {
             std::cout << "Invalid method name." << std::endl;
             return 1;
